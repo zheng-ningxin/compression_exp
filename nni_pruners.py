@@ -291,13 +291,13 @@ def main(args):
     elif args.pruner == 'SimulatedAnnealingPruner':
         pruner = SimulatedAnnealingPruner(
             model, config_list, evaluator=evaluator,  base_algo=args.base_algo,
-            cool_down_rate=args.cool_down_rate, experiment_data_dir=args.experiment_data_dir, dependency_aware=args.dependency, dummy_input=dummy_input, aligned=args.aligned)
+            cool_down_rate=args.cool_down_rate, experiment_data_dir=args.experiment_data_dir)
     elif args.pruner == 'AutoCompressPruner':
         pruner = AutoCompressPruner(
-            model, config_list, trainer=trainer, evaluator=evaluator, dummy_input=dummy_input,
+            model, config_list, trainer=trainer, evaluator=evaluator,
             num_iterations=3, optimize_mode='maximize', base_algo=args.base_algo,
             cool_down_rate=args.cool_down_rate, admm_num_iterations=5, admm_training_epochs=5,
-            experiment_data_dir=args.experiment_data_dir, dependency_aware=args.dependency)
+            experiment_data_dir=args.experiment_data_dir)
     else:
         raise ValueError(
             "Pruner not supported.")
