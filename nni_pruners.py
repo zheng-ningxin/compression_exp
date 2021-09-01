@@ -194,7 +194,7 @@ def main(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     train_loader, val_loader, criterion = get_data(
         args.dataset, args.data_dir, args.batch_size)
-    model = get_model(args)
+    model = get_model(args).to(device)
     ori_acc = test(model, device, criterion, val_loader)
     print('Original Accuracy before the pruning', ori_acc)
 
@@ -215,7 +215,7 @@ def main(args):
     result = {'flops': {}, 'params': {},
               'performance': {}, 'time_mean': {}, 'time_std': {}}
     # measure the original performance before pruning
-    flops, params = count_flops_params(model, get_input_size(args.dataset))
+    flops, params, _ = count_flops_params(model, get_input_size(args.dataset))
     ori_time_mean, ori_time_std = measure_time(model, dummy_input)
     result['flops']['original'] = flops
     result['params']['original'] = params
