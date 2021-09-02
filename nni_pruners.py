@@ -163,6 +163,9 @@ def get_model(args):
         raise Exception('Dataset not supported')
     model = models[args.model](*tmp_args)
     if args.load_pretrained_model is not None:
+        ckpt = torch.load(args.load_pretrained_model)
+        if 'state_dict' in ckpt:
+            ckpt = ckpt['state_dict']
         model.load_state_dict(torch.load(args.load_pretrained_model))
 
     return model
