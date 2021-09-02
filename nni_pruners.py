@@ -18,9 +18,10 @@ import torchvision
 from torch.optim.lr_scheduler import StepLR, MultiStepLR, CosineAnnealingLR
 from torchvision import datasets, transforms
 from nni.algorithms.compression.pytorch.pruning import L1FilterPruner, L2FilterPruner, FPGMPruner
-from nni.algorithms.compression.pytorch.pruning import SimulatedAnnealingPruner, ADMMPruner, NetAdaptPruner, AutoCompressPruner, AMCPruner
+from nni.algorithms.compression.pytorch.pruning import ADMMPruner, NetAdaptPruner, AMCPruner
 from nni.compression.pytorch.utils.counter import count_flops_params
-
+from pruners.simulated_annealing_pruner import SimulatedAnnealingPruner
+from pruners.auto_compress_pruner import AutoCompressPruner
 # import the cifar models
 from models.mnist.lenet import LeNet as CifarLeNet
 from models.cifar10.vgg import VGG as CifarVGG
