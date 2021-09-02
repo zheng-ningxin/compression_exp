@@ -24,3 +24,6 @@ def measure_time(model, data, runtimes=1000):
 def init_seed(seed):
     torch.manual_seed(seed)
     random.seed(seed)
+    torch.cuda.manual_seed(seed) # Sets the seed for generating random numbers for the current GPU. It’s safe to call this function if CUDA is not available; in that case, it is silently ignored.
+    torch.cuda.manual_seed_all(seed) 
+    torch.backends.cudnn.deterministic = True
