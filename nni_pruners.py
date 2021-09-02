@@ -323,7 +323,7 @@ def main(args):
     scheduler = CosineAnnealingLR(optimizer, T_max=args.fine_tune_epochs)
     best_acc = 0
     for epoch in range(args.fine_tune_epochs):
-        train(args, model, device, train_loader, criterion, optimizer, epoch)
+        train(model, device, train_loader, criterion, optimizer)
         scheduler.step()
         acc = evaluator(model)
         if acc > best_acc:
