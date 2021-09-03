@@ -166,7 +166,7 @@ def get_model(args):
         ckpt = torch.load(args.load_pretrained_model)
         if 'state_dict' in ckpt:
             ckpt = ckpt['state_dict']
-        model.load_state_dict(torch.load(args.load_pretrained_model))
+        model.load_state_dict(ckpt)
 
     return model
 
