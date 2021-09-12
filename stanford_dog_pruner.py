@@ -117,7 +117,7 @@ def count_flops(model, log=None, device=None):
     return flops, params
 
 
-model_type = 'mobilenet_v2_torchhub'
+model_type = 'mobilenet_v2'
 input_size = 224
 n_classes = 120
 
