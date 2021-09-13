@@ -58,7 +58,7 @@ def create_model(model_type=None, n_classes=120, input_size=224, checkpoint=None
     if checkpoint is not None:
         model.load_state_dict(torch.load(checkpoint))
 
-    return 
+    return model 
 
 def get_dataloader(dataset_type, data_path, batch_size=32, shuffle=True):
     assert dataset_type in ['train', 'eval']
@@ -117,7 +117,7 @@ def count_flops(model, log=None, device=None):
     return flops, params
 
 
-model_type = 'mobilenet_v2'
+model_type = 'mobilenet_v2_torchhub'
 input_size = 224
 n_classes = 120
 
@@ -130,7 +130,7 @@ pruner_type_to_class = {'level': LevelPruner,
                         'agp': AGPPruner,
                         'mean_activation': ActivationMeanRankFilterPruner,
                         'apoz': ActivationAPoZRankFilterPruner,
-                        'autocompress': AutoCompressPruner,
+                        'auto_compress': AutoCompressPruner,
                         'amc': AMCPruner}
 
 
@@ -294,7 +294,7 @@ def parse_args():
                         help='target sparsity')
     parser.add_argument('--pruner_name', type=str, default='l1',
                         choices=['l1', 'l2', 'slim', 'agp',
-                                 'fpgm', 'mean_activation', 'apoz', 'taylorfo'],
+                                 'fpgm', 'mean_activation', 'apoz', 'taylorfo', 'auto_compress', 'amc'],
                         help='pruner to use')
     # for agp only
     parser.add_argument('--agp_pruning_alg', default='l1',
@@ -400,7 +400,7 @@ def run_pruning(args):
     print(config_list)
 
     kwargs = {}
-    if args.pruner_name in ['slim', 'taylorfo', 'mean_activation', 'apoz', 'agp', 'amc', 'autocompress']:
+    if args.pruner_name in ['slim', 'taylorfo', 'mean_activation', 'apoz', 'agp', 'amc', 'auto_compress']:
         def trainer(model, optimizer, criterion, epoch):
             if not args.kd:
                 return trainer_helper(model, criterion, optimizer, train_dataloader, device)
@@ -419,20 +419,21 @@ def run_pruning(args):
             kwargs['epochs_per_iteration'] = args.agp_n_epochs_per_iter
         if args.pruner_name == 'slim':
             kwargs['sparsifying_training_epochs'] = 10
-        if args.pruner_name == 'autocompress':
+        if args.pruner_name == 'auto_compress':
             kwargs['evaluator'] = evaluator
+            kwargs['dummy_input'] = torch.rand(8,3,224,224)
             kwargs['cool_down_rate'] = 0.97
-
+            kwargs.pop('optimizer') 
     # pruning
     pruner = pruner_type_to_class[args.pruner_name](model, config_list, **kwargs)
     pruner.compress()
-    pruner.export_model(args.experiment_dir + '/model_temp.pth', args.experiment_dir + './mask_temp.pth')
+    pruner.export_model(args.experiment_dir + '/model_temp.pth', args.experiment_dir + '/mask_temp.pth')
     
     # model speedup
     pruner._unwrap_model()
     if args.speed_up:
         dummy_input = torch.rand(1,3,224,224).to(device)
-        ms = ModelSpeedup(model, dummy_input, args.experiment_dir + './mask_temp.pth')
+        ms = ModelSpeedup(model, dummy_input, args.experiment_dir + '/mask_temp.pth')
         ms.speedup_model()
         print(model)
         count_flops(model, log)
