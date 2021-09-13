@@ -423,9 +423,9 @@ def run_pruning(args):
         if args.pruner_name == 'auto_compress':
             kwargs['evaluator'] = evaluator
             kwargs['dummy_input'] = torch.rand(8,3,224,224).to(device)
-            kwargs['cool_down_rate'] = 0.2
-            kwargs['admm_num_iterations']=1
-            kwargs['admm_epochs_per_iteration']=3
+            kwargs['cool_down_rate'] = 0.92
+            kwargs['admm_num_iterations']=2
+            kwargs['admm_epochs_per_iteration']=5
             kwargs.pop('optimizer') 
     # pruning
     pruner = pruner_type_to_class[args.pruner_name](model, config_list, **kwargs)
@@ -433,7 +433,8 @@ def run_pruning(args):
     pruner.export_model(args.experiment_dir + '/model_temp.pth', args.experiment_dir + '/mask_temp.pth')
     
     # model speedup
-    pruner._unwrap_model()
+    if args.pruner_name not in ['auto_compress', 'amc']:
+        pruner._unwrap_model()
     if args.speed_up:
         dummy_input = torch.rand(1,3,224,224).to(device)
         ms = ModelSpeedup(model, dummy_input, args.experiment_dir + '/mask_temp.pth')
