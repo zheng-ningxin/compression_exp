@@ -407,7 +407,8 @@ def run_pruning(args):
             else:
                 return trainer_helper_with_distillation(model, teacher_model, args.alpha, args.temp, optimizer, train_dataloader, device)
         def evaluator(model):
-            return run_eval(model, test_dataloader, device)
+            re = run_eval(model, test_dataloader, device)
+            return re[1]
         kwargs = {
             'trainer': trainer,
             'optimizer': torch.optim.Adam(model.parameters()),
