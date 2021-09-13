@@ -422,8 +422,10 @@ def run_pruning(args):
             kwargs['sparsifying_training_epochs'] = 10
         if args.pruner_name == 'auto_compress':
             kwargs['evaluator'] = evaluator
-            kwargs['dummy_input'] = torch.rand(8,3,224,224)
-            kwargs['cool_down_rate'] = 0.97
+            kwargs['dummy_input'] = torch.rand(8,3,224,224).to(device)
+            kwargs['cool_down_rate'] = 0.2
+            kwargs['admm_num_iterations']=1
+            kwargs['admm_epochs_per_iteration']=3
             kwargs.pop('optimizer') 
     # pruning
     pruner = pruner_type_to_class[args.pruner_name](model, config_list, **kwargs)
