@@ -435,7 +435,6 @@ def run_pruning(args):
     # model speedup
     if args.pruner_name not in ['auto_compress', 'amc']:
         pruner._unwrap_model()
-    if args.speed_up:
         dummy_input = torch.rand(1,3,224,224).to(device)
         ms = ModelSpeedup(model, dummy_input, args.experiment_dir + '/mask_temp.pth')
         ms.speedup_model()
