@@ -203,7 +203,7 @@ def run_finetune_distillation(student_model, teacher_model, train_dataloader, va
                               n_epochs=2, learning_rate=1e-4, weight_decay=0.0, log=None):
     optimizer = torch.optim.Adam(student_model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     # optimizer = torch.optim.SGD(student_model.parameters(), lr=learning_rate, momentum=0.9)            
-
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=n_epochs)
     best_valid_acc = 0.0
     best_model = None
     for epoch in range(n_epochs):
@@ -239,7 +239,8 @@ def run_finetune_distillation(student_model, teacher_model, train_dataloader, va
         if valid_acc > best_valid_acc:
             best_valid_acc = valid_acc
             best_model = copy.deepcopy(student_model).to(device)
-
+        scheduler.step()
+        print('Current Learning rate', scheduler.get_last_lr())
     print("Best validation accuracy: {}".format(best_valid_acc))
     if log is not None:
         log.write("Best validation accuracy: {}".format(best_valid_acc))
