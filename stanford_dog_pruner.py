@@ -467,7 +467,7 @@ def run_pruning(args):
     #         os.remove(f)
 
     log.close()
-    
+    import pdb; pdb.set_trace() 
     
 if __name__ == '__main__':
     args = parse_args()
