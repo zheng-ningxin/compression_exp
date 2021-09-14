@@ -35,14 +35,17 @@ def contruct_model_from_ckpt(model, dummy_input, ckpt_path):
 
     cfg_list = []
     for name, module in model.named_modules():
-        if isinstance(module, (torch.nn.Linear, torch.nn.Conv2d)):
-            weight = ckpt[name]['weight']
-            cfg_list.append({'op_names':[name], 'op_types':['Conv2d', 'Linear'], 'sparsity':1.0-weight.size(0)/module.weight.size(0)})
+        if isinstance(module, (torch.nn.Conv2d)):
+            weight = ckpt[name+'.weight']
+            sparsity = 1.0 - (weight.size(0)-0.1)/module.weight.size(0)
+            if sparsity> 0 and sparsity<1:
+                cfg_list.append({'op_names':[name], 'op_types':['Conv2d', 'Linear'], 'sparsity':sparsity})
 
     pruner = L1FilterPruner(model, cfg_list, dependency_aware=True, dummy_input=dummy_input)
     pruner.compress()
-    pruner.export('./tmp_weight', './tmp_mask')
+    pruner.export_model('./tmp_weight', './tmp_mask')
     pruner._unwrap_model()
     ms = ModelSpeedup(model, dummy_input, './tmp_mask')
     ms.speedup_model()
     model.load_state_dict(ckpt)
+    return model
