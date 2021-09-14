@@ -425,7 +425,8 @@ def run_pruning(args):
             kwargs['evaluator'] = evaluator
             kwargs['dummy_input'] = torch.rand(8,3,224,224).to(device)
             kwargs['cool_down_rate'] = 0.92
-            kwargs['admm_num_iterations']=2
+            kwargs['num_iterations'] = 5
+            kwargs['admm_num_iterations']=4
             kwargs['admm_epochs_per_iteration']=5
             kwargs.pop('optimizer') 
     # pruning
