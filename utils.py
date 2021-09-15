@@ -29,7 +29,7 @@ def init_seed(seed):
     torch.cuda.manual_seed_all(seed) 
     torch.backends.cudnn.deterministic = True
 
-def contruct_model_from_ckpt(model, dummy_input, ckpt_path):
+def construct_model_from_ckpt(model, dummy_input, ckpt_path):
     assert os.path.exists(ckpt_path)
     ckpt = torch.load(ckpt_path)
 
